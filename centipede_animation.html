@@ -1,0 +1,89 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+</head>
+<body>
+	<canvas id='canvas' width='640' height='480'></canvas>
+	<script type="text/javascript">
+		var canvas = document.getElementById('canvas'),
+			c = canvas.getContext('2d'),
+			width = 640,
+			height = 480;
+
+		var centipede =JSON.parse('{"special":{"items":{"fat":{"distance_to_normal":0,"active":false},"speed":{"distance_to_normal":0,"active":false}}},"index":0,"right_code":0,"left_code":0,"count_to_space":53,"ORIGINAL_COUNT_TO_SPACE":80,"space_width":25,"direction":"front","speed":2,"turn_diameter":30,"width":5,"height":5,"points":0,"in_game":true,"color":"#FF0000","bricks":[{"x":143,"y":235,"angle":3.8790193588520285,"width":5,"height":5},{"x":141.51959749332354,"y":233.6552292320897,"angle":3.8790193588520285,"width":5,"height":5},{"x":140.0391949866471,"y":232.31045846417942,"angle":3.8790193588520285,"width":5,"height":5},{"x":138.55879247997063,"y":230.96568769626913,"angle":3.8790193588520285,"width":5,"height":5},{"x":137.07838997329418,"y":229.62091692835884,"angle":3.8790193588520285,"width":5,"height":5},{"x":135.59798746661772,"y":228.27614616044855,"angle":3.8790193588520285,"width":5,"height":5},{"x":134.11758495994127,"y":226.93137539253826,"angle":3.8790193588520285,"width":5,"height":5},{"x":132.6371824532648,"y":225.58660462462797,"angle":3.8790193588520285,"width":5,"height":5},{"x":131.15677994658836,"y":224.24183385671768,"angle":3.8790193588520285,"width":5,"height":5},{"x":129.6763774399119,"y":222.89706308880739,"angle":3.8790193588520285,"width":5,"height":5},{"x":128.19597493323545,"y":221.5522923208971,"angle":3.8790193588520285,"width":5,"height":5},{"x":126.71557242655899,"y":220.2075215529868,"angle":3.8790193588520285,"width":5,"height":5},{"x":125.23516991988254,"y":218.8627507850765,"angle":3.8790193588520285,"width":5,"height":5},{"x":123.75476741320608,"y":217.51798001716622,"angle":3.8790193588520285,"width":5,"height":5},{"x":122.27436490652963,"y":216.17320924925593,"angle":3.8790193588520285,"width":5,"height":5},{"x":120.79396239985317,"y":214.82843848134564,"angle":3.8790193588520285,"width":5,"height":5},{"x":119.31355989317672,"y":213.48366771343535,"angle":3.8790193588520285,"width":5,"height":5},{"x":117.83315738650026,"y":212.13889694552506,"angle":3.8790193588520285,"width":5,"height":5},{"x":116.3527548798238,"y":210.79412617761477,"angle":3.8790193588520285,"width":5,"height":5},{"x":114.87235237314735,"y":209.44935540970448,"angle":3.8790193588520285,"width":5,"height":5},{"x":113.3919498664709,"y":208.1045846417942,"angle":3.8790193588520285,"width":5,"height":5},{"x":111.91154735979444,"y":206.7598138738839,"angle":3.8790193588520285,"width":5,"height":5},{"x":110.43114485311798,"y":205.4150431059736,"angle":3.8790193588520285,"width":5,"height":5},{"x":108.95074234644153,"y":204.07027233806332,"angle":3.8790193588520285,"width":5,"height":5},{"x":107.47033983976507,"y":202.72550157015303,"angle":3.8790193588520285,"width":5,"height":5},{"x":105.98993733308862,"y":201.38073080224274,"angle":3.8790193588520285,"width":5,"height":5},{"x":104.50953482641216,"y":200.03596003433245,"angle":3.8790193588520285,"width":5,"height":5},{"x":103.02913231973571,"y":198.69118926642216,"angle":3.8790193588520285,"width":5,"height":5},{"x":101.54872981305925,"y":197.34641849851187,"angle":3.8790193588520285,"width":5,"height":5},{"x":100.0683273063828,"y":196.00164773060158,"angle":3.8790193588520285,"width":5,"height":5},{"x":98.58792479970634,"y":194.65687696269129,"angle":3.8790193588520285,"width":5,"height":5},{"x":97.10752229302989,"y":193.312106194781,"angle":3.8790193588520285,"width":5,"height":5},{"x":95.62711978635343,"y":191.9673354268707,"angle":3.8790193588520285,"width":5,"height":5},{"x":94.14671727967698,"y":190.6225646589604,"angle":3.8790193588520285,"width":5,"height":5},{"x":92.66631477300052,"y":189.27779389105012,"angle":3.8790193588520285,"width":5,"height":5},{"x":91.18591226632407,"y":187.93302312313983,"angle":3.8790193588520285,"width":5,"height":5},{"x":89.70550975964761,"y":186.58825235522954,"angle":3.8790193588520285,"width":5,"height":5},{"x":88.22510725297116,"y":185.24348158731925,"angle":3.8790193588520285,"width":5,"height":5},{"x":86.7447047462947,"y":183.89871081940896,"angle":3.8790193588520285,"width":5,"height":5},{"x":85.26430223961825,"y":182.55394005149867,"angle":3.8790193588520285,"width":5,"height":5},{"x":83.78389973294179,"y":181.20916928358838,"angle":3.8790193588520285,"width":5,"height":5},{"x":82.30349722626534,"y":179.8643985156781,"angle":3.8790193588520285,"width":5,"height":5},{"x":80.82309471958888,"y":178.5196277477678,"angle":3.8790193588520285,"width":5,"height":5},{"x":79.34269221291243,"y":177.1748569798575,"angle":3.8790193588520285,"width":5,"height":5},{"x":77.86228970623597,"y":175.83008621194722,"angle":3.8790193588520285,"width":5,"height":5},{"x":76.38188719955951,"y":174.48531544403693,"angle":3.8790193588520285,"width":5,"height":5},{"x":74.90148469288306,"y":173.14054467612664,"angle":3.8790193588520285,"width":5,"height":5},{"x":73.4210821862066,"y":171.79577390821635,"angle":3.8790193588520285,"width":5,"height":5}]}');
+		var bricks = centipede.bricks;
+
+		for (var i = 0; i < bricks.length; i++) {
+			var brick = bricks[i];
+
+			createSpine(brick.x, brick.y, brick.width, brick.height, brick.angle);
+		}
+
+
+
+		function createSpine (x, y, width, height, angle) {
+			var image = new Image();
+			image.onload = function () {
+				c.drawImage(image, 0, 0, 640, 480);
+				c.strokeStyle = 'black';
+				c.lineWidth = 2;
+				var radius = width / 2;
+				var p = {
+					x1: x - radius,
+					y1: y,
+					x2: x + radius,
+					y2: y
+				}
+				
+				var quadrant = Math.PI/4;
+				
+				var a1 = angle + quadrant;
+				var a2 = angle - quadrant;
+
+				var angles = {
+					x1: radius * Math.cos(a1),
+					y1: radius * Math.sin(a1),
+					x2: radius * Math.cos(a2),
+					y2: radius * Math.sin(a2)
+				}
+
+				if (a1 <= Math.PI) {
+					p.y1 = p.y1 - angles.y1;
+				} else if (a1 > Math.PI) {
+					p.y1 = p.y1 + angles.y1;
+				}
+				if (a2 <= Math.PI) {
+					p.y2 = p.y2 - angles.y2;
+				} else if (a2 > Math.PI) {
+					p.y2 = p.y2 + angles.y2;
+				}
+				if (quadrant <= a1 && a1 <= quadrant*3) {
+					p.x1 = p.x1 - angles.x1;
+				} else {
+					p.x1 = p.x1 + angles.x1;
+				}
+				if (quadrant <= a2 && a2 <= quadrant*3) {
+					p.x2 = p.x2 - angles.x2;
+				} else {
+					p.x2 = p.x2 + angles.x2;
+				}
+
+
+				c.beginPath();
+				c.moveTo(p.x1, p.y1);
+				c.quadraticCurveTo( (p.x1 + p.x2) / 2, p.y1 - height, p.x2, p.y2);
+				c.stroke();
+			}
+			image.src = "http://s0.geograph.org.uk/photos/16/77/167794_7449eaa1.jpg";
+		}
+
+		createSpine(100, 100, 40, 50, (Math.PI/180)*230);
+
+
+
+
+	</script>
+</body>
+</html>

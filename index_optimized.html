@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en-US">
+<head>
+	<meta charset='utf-8'>
+	<title>CENTIPEDE GAME</title>
+	<meta name="viewport" content="width=320, height=480, user-scalable=no" />
+	<link href='http://fonts.googleapis.com/css?family=Nosifer|Eater|Michroma|Fredericka+the+Great|Butcherman|Frijole|Graduate|Iceland' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" href="main.css">
+</head>
+<body>
+
+	<section id='game'>
+		<div class='mode' id="splash-screen-mode">
+			<h1>centipede</h1>
+			<input id="game-enter" type="submit" value="click here to play" />
+		</div>
+		<div class='mode' id="game-mode">
+			<canvas id="main-canvas" width='320' height='480'></canvas>
+		</div>
+		<div class='mode' id="add-player-mode">
+			<h1>add players</h1>
+			<div class="container">
+				<table>
+					<tr class='player-dom-representative'>
+						<td class='player-name'>player 1</td>
+						<td><input type="text" /></td>
+						<td><input type="text" /></td>
+						<td></td>
+					</tr>
+				</table>
+				<input type="submit" id='add-player' value='add player' />
+				<input type="submit" id='start-game' value='play' />
+			</div>
+		</div>
+	</section>
+	<script src="main.js"></script>
+</body>

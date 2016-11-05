@@ -1,0 +1,898 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Title</title>
+<link href='http://fonts.googleapis.com/css?family=Orbitron' rel='stylesheet' type='text/css'>
+<style>
+	html {
+		overflow: hidden;
+	}
+	body {
+		background-color: black;
+		text-align: center;
+		font-family: 'Orbitron', sans-serif;
+		color: red;
+	}
+	canvas {
+		border: 1px dashed white;
+		margin: auto;
+		-webkit-transition: all 5s;
+	}
+	h1, button {
+		text-shadow: 1px 1px white, 1px -1px white, -1px 1px white, -1px -1px white;
+		color: inherit;
+	}
+	h1 {
+		font-size: 100px;
+		text-transform: lowercase;
+	}
+	button, input {
+		text-transform: uppercase;
+		background-color: black;
+		font-size: 20px;
+		border: 1px dashed white;
+		font-weight: bold;
+	}
+	button:hover {
+		border: 1px solid white;
+	}
+	input[type="text"] {
+		color: white;
+		width: 8em;
+		padding-right: 5px;
+		font-size: inherit;
+		text-align: center;
+	}
+	section {
+		position: absolute;
+		top: 235px;
+		left: 50%;
+		width: 520px;
+		height: 520px;
+		border: 1px solid white;
+		margin-left: -300px;
+		opacity: 1;
+		-webkit-transition: opacity 1s;
+		-moz-transition: opacity 1s;
+		padding: 40px;
+	}
+	.list {
+		text-align: left;
+		margin: auto;
+		border-bottom: 1px solid white;
+		margin-bottom: 5px;
+		margin-top: 20px;
+	}
+	span {
+		margin-right: 10px;
+	}
+	#details {
+		margin: auto;
+		display: inline-block;
+	}
+	.list input {
+		float: right;
+		margin-top: -4px;
+	}
+	.cross {
+		-webkit-transition: opacity 1s;
+		-moz-transition: opacity 1s;
+		opacity: 0.5;
+		color: white;
+		font-weight: bold;
+		float: right;
+		border-left: 10px solid black;
+		text-align: left;
+		cursor: pointer;
+	}
+	.cross:hover {
+		opacity: 1;
+	}
+	#score {
+		position: absolute;
+		top: 235px;
+		right: 12.5%;
+		margin-right: -60px;
+
+		width: 240px;
+		height: 240px;;
+		font-size: 20px;
+		font-weight: bold;
+		border-radius: 20px;
+		border: 1px solid white;
+		box-shadow: 0px 0px 20px white;
+	}
+	#score:before {
+		content: "Score";
+		text-transform: uppercase;
+		position: absolute;
+		top: 20px;
+	}
+	#score div {
+		margin-top: 10px;
+	}
+	#score div:first-child {
+		padding-top: 50px;
+	}
+	#fps {
+		position: absolute;
+		top: 50px;
+		left: 50px;
+		padding: 20px;
+		border: 1px solid white;
+		border-radius: 10px;
+		text-align: center;
+		font-weight: bold;
+		font-size: 25px;
+	}
+</style>
+<h1>snakez
+<button onclick="window.clearInterval(fps_interval);cancelRequestAnimationFrame(window.frame_rate);">Pause</button>
+		
+<button onclick="startFPSCount();tick();">Play</button>
+<button onclick="fullscreen()">Fullscreen</button>
+<button onclick="items=[]">Clear</button>
+<button onclick="ai = ai ? false : true">Toggle AI</button>
+</h1>
+<canvas></canvas>
+<section>
+<div id="details"></div>
+<br>
+<button onclick="addPlayerHTML()" id="add">add player</button>
+</section>
+<div id="score"></div>
+<div id="fps"></div>
+<script>
+
+	var ai = true;
+	function fullscreen() {
+		var docElm = document.documentElement;
+		if (docElm.requestFullscreen) {
+			docElm.requestFullscreen();
+		}
+		else if (docElm.mozRequestFullScreen) {
+			docElm.mozRequestFullScreen();
+		}
+		else if (docElm.webkitRequestFullScreen) {
+			docElm.webkitRequestFullScreen();
+		}
+	}
+	function getCode(evt) {
+		var textBox = this;
+		var p = textBox.parentNode.lastChild;
+		var charCode = (evt.which) ? evt.which : event.keyCode
+		textBox.value = String.fromCharCode(charCode);
+		textBox.setAttribute('data-code', charCode);
+		if (charCode == 8) textBox.value = "backspace"; //  backspace
+		if (charCode == 9) textBox.value = "tab"; //  tab
+		if (charCode == 13) textBox.value = "enter"; //  enter
+		if (charCode == 16) textBox.value = "shift"; //  shift
+		if (charCode == 17) textBox.value = "ctrl"; //  ctrl
+		if (charCode == 18) textBox.value = "alt"; //  alt
+		if (charCode == 19) textBox.value = "pause/break"; //  pause/break
+		if (charCode == 20) textBox.value = "caps lock"; //  caps lock
+		if (charCode == 27) textBox.value = "escape"; //  escape
+		if (charCode == 33) textBox.value = "page up"; // page up, to avoid displaying alternate character and confusing people	         
+		if (charCode == 34) textBox.value = "page down"; // page down
+		if (charCode == 35) textBox.value = "end"; // end
+		if (charCode == 36) textBox.value = "home"; // home
+		if (charCode == 37) textBox.value = "left arrow"; // left arrow
+		if (charCode == 38) textBox.value = "up arrow"; // up arrow
+		if (charCode == 39) textBox.value = "right arrow"; // right arrow
+		if (charCode == 40) textBox.value = "down arrow"; // down arrow
+		if (charCode == 45) textBox.value = "insert"; // insert
+		if (charCode == 46) textBox.value = "delete"; // delete
+		if (charCode == 91) textBox.value = "left window"; // left window
+		if (charCode == 92) textBox.value = "right window"; // right window
+		if (charCode == 93) textBox.value = "select key"; // select key
+		if (charCode == 96) textBox.value = "numpad 0"; // numpad 0
+		if (charCode == 97) textBox.value = "numpad 1"; // numpad 1
+		if (charCode == 98) textBox.value = "numpad 2"; // numpad 2
+		if (charCode == 99) textBox.value = "numpad 3"; // numpad 3
+		if (charCode == 100) textBox.value = "numpad 4"; // numpad 4
+		if (charCode == 101) textBox.value = "numpad 5"; // numpad 5
+		if (charCode == 102) textBox.value = "numpad 6"; // numpad 6
+		if (charCode == 103) textBox.value = "numpad 7"; // numpad 7
+		if (charCode == 104) textBox.value = "numpad 8"; // numpad 8
+		if (charCode == 105) textBox.value = "numpad 9"; // numpad 9
+		if (charCode == 106) textBox.value = "multiply"; // multiply
+		if (charCode == 107) textBox.value = "add"; // add
+		if (charCode == 109) textBox.value = "subtract"; // subtract
+		if (charCode == 110) textBox.value = "decimal point"; // decimal point
+		if (charCode == 111) textBox.value = "divide"; // divide
+		if (charCode == 112) textBox.value = "F1"; // F1
+		if (charCode == 113) textBox.value = "F2"; // F2
+		if (charCode == 114) textBox.value = "F3"; // F3
+		if (charCode == 115) textBox.value = "F4"; // F4
+		if (charCode == 116) textBox.value = "F5"; // F5
+		if (charCode == 117) textBox.value = "F6"; // F6
+		if (charCode == 118) textBox.value = "F7"; // F7
+		if (charCode == 119) textBox.value = "F8"; // F8
+		if (charCode == 120) textBox.value = "F9"; // F9
+		if (charCode == 121) textBox.value = "F10"; // F10
+		if (charCode == 122) textBox.value = "F11"; // F11
+		if (charCode == 123) textBox.value = "F12"; // F12
+		if (charCode == 144) textBox.value = "num lock"; // num lock
+		if (charCode == 145) textBox.value = "scroll lock"; // scroll lock
+		if (charCode == 186) textBox.value = ";"; // semi-colon
+		if (charCode == 187) textBox.value = "="; // equal-sign
+		if (charCode == 188) textBox.value = ","; // comma
+		if (charCode == 189) textBox.value = "-"; // dash
+		if (charCode == 190) textBox.value = "."; // period
+		if (charCode == 191) textBox.value = "/"; // forward slash
+		if (charCode == 192) textBox.value = "`"; // grave accent
+		if (charCode == 219) textBox.value = "["; // open bracket
+		if (charCode == 220) textBox.value = "\\"; // back slash
+		if (charCode == 221) textBox.value = "]"; // close bracket
+		if (charCode == 222) textBox.value = "'"; // single quote
+	
+		p.innerHTML = 'KeyCode:  ' + charCode;
+
+		var elements = this.parentNode.querySelectorAll('input[type="text"]');
+		if (this == elements[0]) {
+			elements[1].focus();
+		} else if (this == elements[1]) {
+			elements[0].focus();
+		}
+	
+		return false;
+	
+	}
+
+	function play() {
+		document.querySelector('section').style.opacity = 0;
+		setTimeout(function () {
+			document.querySelector('section').style.display = 'none';
+		}, 1000);
+		init(true);
+	}
+
+	function addPlayerHTML() {
+		var container = document.getElementById('details');
+		var list = container.childNodes;
+		if (list.length > 4) {
+			document.getElementById('add').style.display = "none";
+		}
+		var title = document.createElement('span');
+		title.innerText = "Player " + (list.length+1).toString();
+		title.className = "player-name";
+		var paragraph = document.createElement('p');
+		paragraph.className = "list";
+		var output = document.createElement('p');
+		output.className = "output-list";
+		var cross = document.createElement('span');
+		cross.innerText = "X";
+		cross.className = "cross";
+		cross.addEventListener('click', function () {
+			this.parentElement.parentElement.removeChild(this.parentElement);
+			if (document.getElementById('details').childNodes.length < 2) {
+				if (document.getElementById('play')) {
+					document.getElementById('play').style.display = "none";
+				}
+			}
+			if (document.getElementById('details').childNodes.length < 6) {
+				if (document.getElementById('add')) {
+					document.getElementById('add').style.display = "inline";
+				}
+			}
+			for (var i = 0, els = document.querySelectorAll('.player-name'); i < els.length; i++) {
+				els[i].innerText = "Player " + (i+1).toString();
+			}
+		}, false);
+
+		if (list.length > 0) {
+			if (document.getElementById('play')) {
+				document.getElementById('play').style.display = "inline";
+			} else {
+				var button = document.createElement('button');
+				button.innerText = "play";
+				button.innerHTML = "play";
+				button.id = 'play';
+				button.addEventListener('click', play, false);
+				document.querySelector('section').appendChild(button);
+			}
+		}
+		if (list.length < 1) {
+			if (document.getElementById('play')) {
+				document.getElementById('play').display = "none";
+			}
+		}
+		if (list.length > 4) {
+			document.getElementById('add').display = "none";
+		}
+
+		var text_1 = document.createElement('input');
+			text_1.type = "text";
+			text_1.addEventListener('keypress', function (e) { e.preventDefault(); return false; }, false);
+			text_1.addEventListener('keydown', getCode, false);
+			text_1.spellcheck = false;
+		var text_2 = document.createElement('input');
+			text_2.type = "text";
+			text_2.addEventListener('keypress', function (e) { e.preventDefault(); return false; }, false);
+			text_2.addEventListener('keydown', getCode, false);
+			text_2.spellcheck = false;
+
+		paragraph.appendChild(title);
+		paragraph.appendChild(cross);
+		paragraph.appendChild(text_2);
+		paragraph.appendChild(text_1);
+		paragraph.appendChild(output);
+		container.appendChild(paragraph);
+
+
+		text_1.focus();
+
+	}
+
+	var canvas = document.querySelector('canvas');
+	var canvas_height = 600;
+	var canvas_width = 600;
+	var c = canvas.getContext('2d');
+	c.canvas.width = canvas_width;
+	c.canvas.height = canvas_height;
+
+
+	var worms = [];
+	
+	function drawBackground() {
+		var rows= [];
+		var scale = 10;
+		var dim = 600/scale;
+
+		for (var y = 0; y < dim; y++) {
+			for (var x = 0; x < 10; x++) {
+				rows[y] = [];
+				rows[y][x] = {
+					x: x*dim,
+					y: y*dim,
+					w: dim,
+					h: dim,
+					bg: "white"
+				};
+
+				var row = rows[y][x];
+				c.fillStyle = row.bg;
+				c.strokeStyle = "black";
+				c.lineWidth=1;
+				c.fillRect(row.x, row.y, row.w, row.h);
+				c.strokeRect(row.x, row.y, row.w, row.h);
+			}
+		}
+	}
+	function draw() {
+		drawBackground();
+		for (var u = 0, item; item = items[u]; u++) {
+			item.draw();
+		}
+		for (var b = 0; b < worms.length; b++) {
+			var worm = worms[b];
+			c.fillStyle = worm.color;
+			var bricks = worm.bricks;
+			for (var i = 0, brick; brick = bricks[i]; i++) {
+				if (i == bricks.length - 1) {
+					c.fillStyle = "blue";
+				}
+				c.fillRect( brick.x, brick.y, brick.width, brick.height );
+			}
+		}
+
+		
+	}
+	var items = [];
+	function update() {
+
+		for (var t = 0; t < worms.length; t++) {
+
+			if (!worms[t].in_game) continue;
+
+
+			var worm = worms[t];
+			var bricks = worm.bricks;
+
+			if (worm.special.items.fat.active) {
+				worm.special.items.fat.distance_to_normal--;
+				if (worm.special.items.fat.distance_to_normal<1) {
+					worm.special.items.fat.active = false;
+					worm.width = worm.height = 5;
+				}
+			}
+			if (worm.special.items.speed.active) {
+				worm.special.items.speed.distance_to_normal--;
+				if (worm.special.items.speed.distance_to_normal<1) {
+					worm.special.items.speed.active = false;
+					var fps = 1000/frame_time;
+					var new_speed = (((60-fps)/60 )+ 1 )* 2;
+					worm.speed = new_speed;
+				}
+			}
+	
+			var last_brick = bricks[bricks.length - 1];
+			var angle = last_brick.angle;
+				var x = last_brick.x;
+				var y = last_brick.y;
+	
+			if (worm.direction != "front") {
+	
+				var units = (Math.PI * 2) / ((worm.turn_diameter / worm.speed) * 2 * Math.PI);
+	
+				if (worm.direction == "left") {
+					angle -= units;
+				} else if (worm.direction == "right") {
+					angle += units;
+				}
+			}
+	
+	
+			var new_x = x + (worm.speed * Math.cos(angle));
+			var new_y = y + (worm.speed * Math.sin(angle));
+	
+			worm.count_to_space--;
+			if (worm.count_to_space < worm.space_width) {
+	
+				worm.bricks.splice(worm.bricks.length - 1, 1);
+	
+				if (worm.count_to_space == 1) {
+					worm.count_to_space = worm.ORIGINAL_COUNT_TO_SPACE;;
+				}
+			}
+	
+			if (new_x < 0 || new_x + worm.width > canvas_width) {
+				if (ai === true) {
+					if (t < 2) {
+						angle = Math.PI - angle;
+					} else {
+						return gameOver(worm);
+					}
+				} else {
+					angle = Math.PI - angle;
+					return gameOver(worm);
+				}
+			}
+			if (new_y < 0 || new_y + worm.height > canvas_height) {
+				if (ai === true) {
+					if (t < 2) {
+						angle = 2*Math.PI - angle;
+					} else {
+						return gameOver(worm);
+					}
+				} else {
+					angle = 2*Math.PI - angle;
+					return gameOver(worm);
+				}
+			}
+	
+			
+			var props = {
+				x: new_x,
+				y: new_y,
+				angle: angle,
+				width: worm.width,
+				height: worm.height
+			};
+	
+			worm.bricks.push( props );
+			
+
+			if (!ai) {
+				// check if collide with itself;
+				for (var i = 0, brick; i < bricks.length - worm.width ; i++) {
+					brick = bricks[i];
+					if (checkIfCollide( {
+						x: brick.x,
+						y: brick.y,
+						width: brick.width,
+						height: brick.height
+					}, props )) {
+						return gameOver(worm);
+					}
+				}
+			}
+			if (!ai) {
+				// check if collide with bricks in other worms
+				if (checkIfWormCollide(props, t)) {
+					return gameOver(worm);
+				}
+			}
+			
+			// ITEM CHECK
+			for (var u = 0, item; item = items[u]; u++) {
+				if (checkIfItemCollideWithWorm(item.x,item.y,item.radius)) {
+					item.exec(worm);
+				}
+			}
+
+			
+
+		}
+		
+		if (getRandomInt(0, 300) == 1) {
+			createRandItem();
+		}
+		draw();
+	}
+
+	function createRandItem() {
+		if (worms.length > 0 && items.length < 5) {
+			var r = getRandomInt(0,100);
+			if (r >= 0 && r < 20) {
+				addItem('fat');
+			}
+			if (r >= 20 && r < 40) {
+				addItem('speed');
+			}
+			if (r >= 40 && r < 60) {
+				addItem('barrel-roll');
+			}
+		}
+	}
+
+	var degrees = 0;
+	var item_template = {
+		"barrel-roll": {
+			radius: 30,
+			exec: function ( worm ) {
+				degrees = (degrees == 90 ? 0 : 90);
+				c.canvas.style.webkitTransform = "rotate(" + degrees + "deg)";
+				return items.splice(items.indexOf(this), 1);
+			},
+			draw: function () {
+				c.fillStyle = "black";
+				c.beginPath();
+				c.arc(this.x, this.y, this.radius, 0, Math.PI*2, true);
+				c.fill();
+				c.closePath();
+			}
+		},
+		"fat": {
+			radius: 30,
+			exec: function ( worm ) {
+				worm.special.items.fat.distance_to_normal += 500;
+				worm.special.items.fat.active = true;
+				worm.width = worm.height = 10;
+
+				return items.splice(items.indexOf(this), 1);
+			},
+			draw: function () {
+				c.fillStyle = "green";
+				c.beginPath();
+				c.arc(this.x, this.y, this.radius, 0, Math.PI*2, true);
+				c.fill();
+				c.closePath();
+			}
+		},
+		"speed": {
+			radius: 30,
+			exec: function ( worm ) {
+				worm.special.items.speed.distance_to_normal += 500;
+				if (!worm.special.items.speed.active) {
+					worm.speed = worm.speed*2;
+				}
+				worm.special.items.speed.active = true;
+
+				return items.splice(items.indexOf(this), 1);
+			},
+			draw: function () {
+				c.fillStyle = "blue";
+				c.beginPath();
+				c.arc(this.x, this.y, this.radius, 0, Math.PI*2, true);
+				c.fill();
+				c.closePath();
+			}
+		}
+	}
+	function addItem(name) {
+		var template = item_template[name],
+			x = getRandomInt(50, canvas_width-50),
+			y = getRandomInt(50, canvas_height-50),
+			radius = template.radius,
+			run_loop = true;
+
+		do {
+			if (!checkIfItemCollideWithWorm(x,y,radius)) {
+				if (!checkIfItemCollideWithItem(x,y,radius)) {
+					run_loop = false;
+				} else {
+					x = getRandomInt(50, canvas_width-50);
+					y = getRandomInt(50, canvas_height-50);
+				}
+			} else {
+				x = getRandomInt(50, canvas_width-50);
+				y = getRandomInt(50, canvas_height-50);
+			}
+		} while (run_loop);
+			
+		var exec = template.exec;
+		var draw = template.draw;
+			
+		items.push({
+			name: name,
+			x: x,
+			y: y,
+			radius: radius,
+			exec: exec,
+			draw: draw
+		});
+	}
+	
+	
+	function checkIfItemCollideWithWorm(x,y,radius) {
+		var ret_value = false;
+		for (var w = 0; w < worms.length; w++) {
+			for (var b = 0; b < worms[w].bricks.length; b++) {
+				var brick = worms[w].bricks[b];
+				var brick_radius = brick.width / 2;
+
+				var item_props = {
+					x: x,
+					y: y,
+					radius: radius
+				};
+				var brick_props = {
+					x: brick.x + brick_radius,
+					y: brick.y + brick_radius,
+					radius: brick_radius
+				};
+				var up = checkIfCircleCollide(brick_props, item_props);
+				if (up) {
+					return true;
+				}
+			}
+		}
+		return ret_value;
+	}
+	function checkIfItemCollideWithItem(x,y,radius) {
+		var ret_value = false;
+		if (items.length > 0) {
+			for (var i = 0; i < items.length; i++) {
+				var old_item = items[i];
+				var old_x = old_item.x;
+				var old_y = old_item.y;
+				var old_radius = old_item.radius;
+
+				if (checkIfCircleCollide( {
+					x: x,
+					y: y,
+					radius: radius
+				}, {
+					x: old_x,
+					y: old_y,
+					radius: old_radius
+				} )) {
+					return true;
+				}
+			}
+		}
+		return ret_value;
+	}
+
+	function checkIfCircleCollide(a, b) {
+		var difference = {
+			x: a.x - b.x,
+			y: a.y - b.y
+		}
+		var distance = Math.sqrt( (difference.x*difference.x) + (difference.y*difference.y) );
+		return distance < a.radius + b.radius;
+	}
+
+	function checkIfWormCollide(props, checked) {
+		for (var w = 0; w < worms.length; w++) {
+			if (w == checked) continue;
+			for (var i = 0, brick; i < worms[w].bricks.length; i++) {
+				brick = worms[w].bricks[i];
+				if (checkIfCollide( {
+					x: brick.x,
+					y: brick.y,
+					width: brick.width,
+					height: brick.height
+				}, props )) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	function checkIfCollide(a,b) {
+		if ( (a.x + a.width > b.x && a.x + a.width < b.x + b.width) && (a.y + a.height > b.y && a.y + a.height < b.y + b.height) ||
+		(a.x < b.x + b.width && a.x > b.x) && (a.y < b.y + b.height && a.y > b.y)) {
+			return true;
+		}
+		return false;
+	}
+
+
+	function newGame() {
+		var points = [];
+		for (var i = 0; i < worms.length; i++) {
+			points.push(worms[i].points);
+		}
+		cancelRequestAnimationFrame(window.frame_rate);
+		window.clearInterval(fps_interval);
+		init(points);
+	}
+
+	function gameOver(worm) {
+		worm.in_game = false;
+		var worms_left = 0;
+		for (var i = 0; i < worms.length; i++) {
+			if (worms[i].in_game) {
+				worms[i].points++;
+				worms_left++;
+			}
+		}
+		document.getElementById('score').innerText = "";
+		worms.sort(function (a,b) {
+			return a.points < b.points;
+		});
+		for (var b = 0; b < worms.length; b++) {
+			var div = document.createElement('div');
+			div.innerText = 'Player ' + (worms[b].index+1).toString() + ": " + worms[b].points.toString() + "p" 
+			document.getElementById('score').appendChild(div);
+		}
+		worms.sort(function (a,b) {
+			return a.index > b.index;
+		});
+
+		if (worms_left < 2) { // if less than two worms
+			newGame();
+		}
+
+		return false;
+	}
+
+	function getRandomArbitary (min, max) {
+		return Math.random() * (max - min) + min;
+	}
+
+	function getRandomInt (min, max) {
+		return Math.floor(Math.random() * (max - min + 1)) + min;
+	}
+
+
+	/*
+	*var* DEFAULT SETTINGS
+	*/
+
+	function init(old_points) {
+		if (old_points !== true) {
+			worms = [];
+			items = [];
+		}
+		var html_list = document.querySelectorAll('p.list');
+		for (var i = 0; i < html_list.length; i++) {
+			var keys = html_list[i].querySelectorAll('input[type="text"]');
+			worms.push((function () {
+				var x = getRandomInt(50, canvas_width - 50);
+				var y = getRandomInt(50, canvas_height - 50);
+				var angle = getRandomArbitary(0, Math.PI*2);
+				var right_code = keys[0].getAttribute('data-code');
+				var left_code = keys[1].getAttribute('data-code');
+				var width = 5;
+				var height = 5;
+				var points = 0;
+
+				if (i > 0) {
+					var run = true;
+					while (run) {
+						for (var b = 0; b < worms.length; b++) {
+							var prev_worm = worms[b].bricks[0];
+							if (checkIfCollide({x:prev_worm.x, y: prev_worm.y, w: 50, h: 50}, {x:x, y:y, w: 50, h: 50})) {
+								x = getRandomInt(50, canvas_width - 50);
+								y = getRandomInt(50, canvas_height - 50);
+								run = true;
+								b = 0;
+							} else {
+								run = false;
+							}
+						}
+					}
+				}
+			
+				if (old_points !== true) {
+					points = old_points[i];
+				}
+
+				return {
+					special: {
+						items: {
+							"fat": {
+								distance_to_normal: 0,
+								active: false
+							},
+							"speed": {
+								distance_to_normal: 0,
+								active: false
+							}
+						}
+					},
+					index: i,
+					right_code: right_code,
+					left_code: left_code,
+					count_to_space: 100,
+					ORIGINAL_COUNT_TO_SPACE: 80,
+					space_width: 25,
+					direction: "front",
+					speed: 2,
+					turn_diameter: 30,
+					width: 5,
+					height: 5,
+					points: points,
+					in_game: true,
+					color: ["#C0C0C0", "#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#00FFFF", "#FF00FF"][i],
+					bricks: [{
+						x: x,
+						y: y,
+						angle: angle,
+						width: width,
+						height: height
+					}]
+				};
+				//angle: getRandomArbitary(0, Math.PI*2),
+				//x: getRandomInt(50, canvas_width - 50)
+				//y: getRandomInt(50, canvas_height - 50)
+			}()));
+		}
+		for (var i = 0; i < 10; i++) update();
+		setTimeout(function () {
+			tick();
+			startFPSCount();
+		}, 2000);
+
+	}
+	//init();
+	window.cancelRequestAnimationFrame = window.webkitCancelRequestAnimationFrame || window.mozCancelRequestAnimationFrame;
+	window.requestAnimationFrame = window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame;
+
+
+	var filter_strength = 20;
+	var frame_time = 0, last_loop = new Date, this_loop;
+	
+	window.frame_rate;
+	function tick() {
+		window.frame_rate = requestAnimationFrame(tick);
+		update();
+		var this_frame_time = (this_loop=new Date) - last_loop;
+		frame_time += (this_frame_time - frame_time) / filter_strength;
+		last_loop = this_loop;
+	}
+	
+	var fps_interval;
+	function startFPSCount() {
+		fps_interval = setInterval(fpsPull, 1000);
+	}
+	function fpsPull() {
+		var fps_out = document.getElementById('fps');
+		fps_out.innerHTML = (1000/frame_time).toFixed(1) + " fps";
+		var fps = 1000/frame_time;
+		var new_speed = 120/fps;
+		for (var i = 0, worm; worm = worms[i]; i++) {
+			if (!worm.special.items.speed.active) {
+				worm.speed = new_speed;
+			} else {
+				worm.speed = new_speed*2;
+			}
+		}
+	}
+
+	document.addEventListener('keydown', function (e) {
+		for (var i = 0; i < worms.length; i++) {
+
+			var worm = worms[i];
+
+			if (e.keyCode == worm.left_code && worm.direction != "left") {
+				worm.direction = "left";
+			} else if (e.keyCode == worm.right_code && worm.direction != "right") {
+				worm.direction = "right";
+			}
+		}
+	}, false);
+	document.addEventListener('keyup', function (e) {
+		for (var i = 0; i < worms.length; i++) {
+
+			var worm = worms[i];
+
+			if ((e.keyCode == worm.right_code || e.keyCode == worm.left_code) && worm.direction != "front") {
+				worm.direction = "front";
+			}
+		}
+	}, false);
+</script>

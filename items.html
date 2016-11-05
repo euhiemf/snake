@@ -1,0 +1,82 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+</head>
+<body>
+	<canvas id="can" width="640" height="480"></canvas>
+	<script type="text/javascript">
+		var c = document.getElementById('can').getContext('2d');
+		var width = 640;
+		var height = 480;
+		var radius = 70;
+		var margin = 10;
+
+
+		var videos = [
+			"barrel-roll.ogg",
+			"electric.webm",
+			"explosions.webm",
+			"fire.webm",
+			"fire.webm",
+			"fire.webm",
+			"explosions.webm",
+			"explosions.webm",
+			"fire.webm",
+			"explosions.webm",
+			"fire.webm",
+			"grow.webm"
+		];
+		function init () {
+		for (var i = 0, video; video = videos[i]; i++) {
+			var vid = document.createElement('video');
+			vid.src = video;
+			vid.width = 640;
+			vid.height = 480;
+			vid.autoplay = true;
+			vid.loop = true;
+			vid.muted = true;
+			vid.style.display = "none";
+			document.body.appendChild(vid);
+			videos.splice(i, 1, vid);
+		}
+		loop();
+		}
+
+function loop () {
+	update();
+	webkitRequestAnimationFrame(loop);
+}
+
+
+function update () {
+	c.fillStyle = "black";
+	c.strokeStyle = "rgb(150,150,150)";
+	c.lineWidth = 2;
+	c.fillRect(0,0,width,height);
+	for (var i = 0, x = 0, y = 0, video; video = videos[i]; i++) {
+		
+		c.save();
+		c.translate(x*radius*2+margin*x + 10, y*radius*2+ margin*y + 10);
+		c.beginPath();
+		c.arc(radius,radius,radius,0,Math.PI*2,true);
+		c.stroke();
+		c.clip();
+		c.drawImage(video, 0, 0, radius*2, radius*2);
+		c.stroke();
+		c.restore();
+
+		x += 1;
+
+		if (x*radius*2+margin*x + radius*2 > width) {
+			x = 0;
+			y += 1;
+		}
+	}
+}
+
+init();
+	</script>
+</body>
+</html>
